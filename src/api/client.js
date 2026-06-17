@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-// ✅ توحيد الرابط على السيرفر الشغال والمستقر (backend-1)
-// استبدل السطر القديم برابط رايلواي المباشر ده:
-const API_BASE_URL = "https://graduation-project-2026-nbis-backend-production.up.railway.app/api";
+// ✅ توحيد الرابط على السيرفر الشغال والمستقر (Railway)
+// تم تعديل اسم المتغير لـ SERVER_URL ليتوافق مع السطور اللي تحت
+const SERVER_URL = "https://graduation-project-2026-nbis-backend-production.up.railway.app";
 
 const client = axios.create({
   // الرابط الأونلاين الموحد للـ API
@@ -48,7 +48,7 @@ client.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('nbis_token');
       localStorage.removeItem('nbis_user');
-      // التوجيه لصفحة الـ login بالتوافق مع Netlify Redirects
+      // التوجيه لصفحة الـ login بالتوافق مع الـ Redirects
       window.location.href = '/login';
     }
     return Promise.reject(error);
