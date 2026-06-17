@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/authContext";
-import { getDashboardPath } from "../context/authContext";
-import AuthLayout from "../components/AuthLayout";
+import { useAuth } from "../context/AuthContext";
+import { getDashboardPath } from "../context/AuthContext";
+import AuthLayout from "../components/authLayout";
 import logo from "../assets/Logo 1.png";
 
 function Register() {

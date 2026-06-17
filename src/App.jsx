@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./context/authContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import Welcome from "./pages/welcome";
 import Login from "./pages/login";
@@ -29,6 +28,13 @@ import MyChildren from "./pages/parent/mychildren";
 
 import RegisterChildForm from "./pages/shared/RegisterChildForm";
 import VerificationLogsShared from "./pages/shared/VerificationLogs";
+
+// ── 🛠️ التعديلات الذهبية لحل مشكلة الـ Linux Build ───────────────────
+
+// 1. تصحيح الحرف الأول ليكون كابيتال (AuthContext) ليطابق اسم الملف على الهارد ديسك
+import { AuthProvider } from "./context/AuthContext";
+
+// 2. تصحيح الحرف الأول ليكون سمول (nurseLayout) ليطابق اسم الملف الحقيقي
 import NurseLayout from "./components/nurseLayout";
 
 // توحيد اسم الـ Import لـ سمول
