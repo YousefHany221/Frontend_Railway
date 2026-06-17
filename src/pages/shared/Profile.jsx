@@ -1,6 +1,6 @@
 // src/pages/admin/Profile.jsx
 import { useState, useEffect, useRef } from "react";
-import AdminLayout from "../../components/AdminLayout";
+import AdminLayout from "../../components/adminLayout";
 import { useAuth } from "../../context/AuthContext";
 import { authService } from "../../api/auth";
 
