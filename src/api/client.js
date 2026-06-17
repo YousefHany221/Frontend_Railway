@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 // ✅ توحيد الرابط على السيرفر الشغال والمستقر (backend-1)
-const SERVER_URL = 'https://graduation-project-2026-nbis-backend-1.onrender.com';
+// استبدل السطر القديم برابط رايلواي المباشر ده:
+const API_BASE_URL = "https://graduation-project-2026-nbis-backend-production.up.railway.app/api";
 
 const client = axios.create({
   // الرابط الأونلاين الموحد للـ API
