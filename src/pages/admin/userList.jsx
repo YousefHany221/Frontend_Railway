@@ -1,7 +1,7 @@
 // src/pages/admin/UserList.jsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import AdminLayout from "../../components/AdminLayout";
+import AdminLayout from "../../components/adminLayout";
 import { adminService } from "../../api/admin";
 import { useAuth } from "../../context/AuthContext";
 

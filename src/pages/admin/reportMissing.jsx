@@ -1,7 +1,7 @@
 // src/pages/admin/ReportMissing.jsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AdminLayout from "../../components/AdminLayout";
+import AdminLayout from "../../components/adminLayout";
 import { parentService } from "../../api/parent";
 import { adminService } from "../../api/admin";
 

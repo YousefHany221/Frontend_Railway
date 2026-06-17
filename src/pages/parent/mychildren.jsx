@@ -1,6 +1,6 @@
 // src/pages/parent/MyChildren.jsx
 import { useState, useEffect } from "react";
-import ParentLayout from "../../components/ParentLayout";
+import ParentLayout from "../../components/parentLayout";
 import { parentService } from "../../api/parent";
 
 const statusStyle = {

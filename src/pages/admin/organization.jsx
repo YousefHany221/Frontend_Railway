@@ -1,6 +1,6 @@
 // src/pages/admin/Organization.jsx
 import { useEffect, useState } from "react";
-import AdminLayout from "../../components/AdminLayout";
+import AdminLayout from "../../components/adminLayout";
 import { adminService } from "../../api/admin";
 
 export default function Organization() {

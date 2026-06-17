@@ -1,5 +1,5 @@
 // src/pages/parent/ParentDashboard.jsx
-import ParentLayout from "../../components/ParentLayout";
+import ParentLayout from "../../components/parentLayout";
 
 const stats = [
   { label: "My Children Count", value: 2, color: "bg-blue-500", textColor: "text-white", icon: "👶" },

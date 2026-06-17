@@ -1,6 +1,6 @@
 // src/pages/admin/RolesPermissions.jsx
 import { useState } from "react";
-import AdminLayout from "../../components/AdminLayout";
+import AdminLayout from "../../components/adminLayout";
 
 export default function RolesPermissions() {
   const [roles, setRoles] = useState([

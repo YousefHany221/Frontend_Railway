@@ -1,6 +1,6 @@
 // src/pages/admin/Settings.jsx
 import { useState, useEffect } from "react";
-import AdminLayout from "../../components/AdminLayout";
+import AdminLayout from "../../components/adminLayout";
 import { authService } from "../../api/auth";
 
 const Toggle = ({ value, onChange }) => (
