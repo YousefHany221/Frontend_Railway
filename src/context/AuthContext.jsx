@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const storedToken = localStorage.getItem('nbis_token');
     const storedUser = localStorage.getItem('nbis_user');
-    
+
     if (storedToken && storedUser) {
       setToken(storedToken);
       setUser(JSON.parse(storedUser));
@@ -39,18 +39,19 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = async (credentials) => {
+  // 🚀 تعديل يستقبل الـ config ويمرره للباكيند
+  const login = async (credentials, config = {}) => {
     try {
-      const response = await authService.login(credentials);
+      const response = await authService.login(credentials, config);
       const { token, user } = response;
-      
+
       localStorage.setItem('nbis_token', token);
       localStorage.setItem('nbis_user', JSON.stringify(user));
-      
+
       setToken(token);
       setUser(user);
       setIsAuthenticated(true);
-      
+
       return { success: true, user };
     } catch (error) {
       return {
@@ -61,18 +62,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (data) => {
+  // 🚀 تعديل يستقبل الـ config ويمرره للباكيند
+  const register = async (data, config = {}) => {
     try {
-      const response = await authService.register(data);
+      const response = await authService.register(data, config);
       const { token, user } = response;
-      
+
       localStorage.setItem('nbis_token', token);
       localStorage.setItem('nbis_user', JSON.stringify(user));
-      
+
       setToken(token);
       setUser(user);
       setIsAuthenticated(true);
-      
+
       return { success: true, user };
     } catch (error) {
       return {
@@ -100,7 +102,6 @@ export const AuthProvider = ({ children }) => {
   const getCurrentUser = async () => {
     try {
       const response = await authService.getCurrentUser();
-      console.log('getCurrentUser response:', response);
       setUser(response.user);
       localStorage.setItem('nbis_user', JSON.stringify(response.user));
       return response.user;
@@ -112,16 +113,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const value = {
-    user,
-    token,
-    loading,
-    isAuthenticated,
-    login,
-    register,
-    logout,
-    getCurrentUser,
-  };
-
+  const value = { user, token, loading, isAuthenticated, login, register, logout, getCurrentUser };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
