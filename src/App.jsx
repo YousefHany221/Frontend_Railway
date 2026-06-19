@@ -18,11 +18,8 @@ import OrganizationPolice from "./pages/admin/organizationPolice";
 import RolesPermissions from "./pages/admin/rolesPermissions";
 import ReportMissing from "./pages/admin/reportMissing";
 import NurseDashboard from "./pages/nurse/nurseDashboard";
-import ChildrenList from "./pages/nurse/childrenList";
+import ChildrenList from "./pages/nurse/childrenList"; // 🎯 الملف الموحد والصحيح لقائمة الأطفال
 import PoliceDashboard from "./pages/police/policeDashboard";
-
-// استيراد صفحة تفاصيل الطفل
-// 🎯 الاستدعاء الصحيح المطابق للملف عندك بالظبط
 
 import ParentDashboard from "./pages/parent/parentDashboard";
 import ParentVerification from "./pages/parent/parentVerification";
@@ -33,7 +30,7 @@ import VerificationLogsShared from "./pages/shared/VerificationLogs";
 
 import { AuthProvider } from "./context/AuthContext";
 import NurseLayout from "./components/nurseLayout";
-import adminLayout from "./components/adminLayout";
+import adminLayout from "./components/adminLayout"; // 🎯 تأكد أن الحرف يطابق اسم ملفك (سمول أو كابيتال)
 import PoliceLayout from "./components/policeLayout";
 
 function App() {
@@ -67,7 +64,9 @@ function App() {
           <Route path="/nurse/dashboard" element={<ProtectedRoute allowedRoles={['nurse', 'admin']}><NurseDashboard /></ProtectedRoute>} />
           <Route path="/nurse/children/list" element={<ProtectedRoute allowedRoles={['nurse', 'admin']}><ChildrenList /></ProtectedRoute>} />
           <Route path="/nurse/children/register" element={<ProtectedRoute allowedRoles={['nurse', 'admin']}><RegisterChildForm layout={NurseLayout} /></ProtectedRoute>} />
-          <Route path="/nurse/child/:id" element={<ProtectedRoute allowedRoles={['nurse', 'admin']}><ChildDetails /></ProtectedRoute>} />
+
+          {/* 🎯 تم استبدال الكراش بصفحة قائمة الأطفال مؤقتاً لحين برمجة صفحة التفاصيل المنفصلة */}
+          <Route path="/nurse/child/:id" element={<ProtectedRoute allowedRoles={['nurse', 'admin']}><ChildrenList /></ProtectedRoute>} />
           <Route path="/nurse/profile" element={<ProtectedRoute allowedRoles={['nurse', 'admin']}><Profile layout={NurseLayout} /></ProtectedRoute>} />
 
           {/* ── 👮 مسارات الشرطة (Police Routes) ─────────────────── */}
@@ -80,12 +79,12 @@ function App() {
           <Route path="/parent/verification" element={<ProtectedRoute allowedRoles={['user']}><ParentVerification /></ProtectedRoute>} />
           <Route path="/parent/children" element={<ProtectedRoute allowedRoles={['user']}><MyChildren /></ProtectedRoute>} />
 
-          {/* تم إضافة المسار هنا داخل Routes بشكل صحيح */}
+          {/* 🎯 تم تعديل هنا أيضاً لتفادي الصفحة البيضاء */}
           <Route
             path="/parent/child-details/:id"
             element={
               <ProtectedRoute allowedRoles={['user']}>
-                <ChildDetails />
+                <MyChildren />
               </ProtectedRoute>
             }
           />
