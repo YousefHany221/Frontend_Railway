@@ -20,10 +20,29 @@ const Login = () => {
     setErrors({});
 
     try {
-      await login(formData);
-      navigate('/admin/dashboard'); // تعديل المسار حسب توجيهات لوحة التحكم الخاصة بك
+      // محاولة تسجيل الدخول
+      const data = await login(formData);
+
+      // 🎯 الحل السحري: قراءة الـ role وتوجيهه لمسار صحيح موجود في App.jsx لمنع الصفحة البيضاء
+      const userRole = data?.user?.role || JSON.parse(localStorage.getItem('nbis_user'))?.role;
+
+      if (userRole === 'admin') {
+        navigate('/admin/dashboard');
+      } else if (userRole === 'nurse') {
+        navigate('/nurse/dashboard');
+      } else if (userRole === 'police') {
+        navigate('/police/dashboard');
+      } else {
+        navigate('/parent/dashboard'); // أولياء الأمور
+      }
+
     } catch (error) {
       console.error("Login failed:", error);
+
+      if (error.response && error.response.data) {
+        console.log("Laravel Response Error Data:", error.response.data);
+      }
+
       if (error.response && error.response.status === 422) {
         setErrors(error.response.data.errors);
       } else if (error.response && error.response.status === 401) {
@@ -37,62 +56,43 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 font-sans" dir="rtl">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            تسجيل الدخول - NBIS
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            نظام التعرف على الأطفال حديثي الولادة
-          </p>
+    <div className="login-container">
+      <form onSubmit={handleSubmit} className="login-form">
+        <h2>تسجيل الدخول - NBIS</h2>
+
+        {errors.auth && <div className="error-message global-error">{errors.auth[0]}</div>}
+        {errors.global && <div className="error-message global-error">{errors.global[0]}</div>}
+
+        <div className="form-group">
+          <label>البريد الإلكتروني</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="example@domain.com"
+            required
+          />
+          {errors.email && <span className="error-message text-danger">{errors.email[0]}</span>}
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {errors.auth && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm text-center font-medium border border-red-100">{errors.auth[0]}</div>}
-          {errors.global && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm text-center font-medium border border-red-100">{errors.global[0]}</div>}
+        <div className="form-group">
+          <label>كلمة المرور</label>
+          <input
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="••••••••"
+            required
+          />
+          {errors.password && <span className="error-message text-danger">{errors.password[0]}</span>}
+        </div>
 
-          <div className="rounded-md space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">البريد الإلكتروني</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="appearance-none relative block w-full px-3 py-2.5 border border-gray-300 placeholder-gray-400 text-gray-900 rounded-xl focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
-                placeholder="example@domain.com"
-                required
-              />
-              {errors.email && <span className="text-xs text-red-500 mt-1 block">{errors.email[0]}</span>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">كلمة المرور</label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="appearance-none relative block w-full px-3 py-2.5 border border-gray-300 placeholder-gray-400 text-gray-900 rounded-xl focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
-                placeholder="••••••••"
-                required
-              />
-              {errors.password && <span className="text-xs text-red-500 mt-1 block">{errors.password[0]}</span>}
-            </div>
-          </div>
-
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out disabled:opacity-50"
-            >
-              {loading ? 'جاري التحقق...' : 'دخول'}
-            </button>
-          </div>
-        </form>
-      </div>
+        <button type="submit" disabled={loading} className="btn-submit">
+          {loading ? 'جاري التحقق...' : 'دخول'}
+        </button>
+      </form>
     </div>
   );
 };
