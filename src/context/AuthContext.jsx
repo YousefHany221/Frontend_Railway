@@ -1,118 +1,72 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { authService } from '../api/auth';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
 
-const AuthContext = createContext(null);
+const AuthContext = createContext();
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
-
-export const getDashboardPath = (role) => {
-  const rolePaths = {
-    admin: '/admin/dashboard',
-    nurse: '/nurse/dashboard',
-    police: '/police/dashboard',
-    user: '/parent/dashboard',
-  };
-  return rolePaths[role] || '/login';
-};
+// إعداد رابط السيرفر الأساسي (تأكد من تحديثه)
+axios.defaults.baseURL = 'https://graduation-project-2026-nbis-backend-production.up.railway.app';
+// هذا السطر ضروري جداً لنقل الـ Cookies بين النطاقات (Vercel و Railway)
+axios.defaults.withCredentials = true;
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem('nbis_token');
-    const storedUser = localStorage.getItem('nbis_user');
-
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-      setIsAuthenticated(true);
-    }
-    setLoading(false);
-  }, []);
-
-  // 🚀 تعديل يستقبل الـ config ويمرره للباكيند
-  const login = async (credentials, config = {}) => {
+  // دالة لجلب بيانات المستخدم الحالي إذا كان مسجلاً للدخول
+  const getUser = async () => {
     try {
-      const response = await authService.login(credentials, config);
-      const { token, user } = response;
-
-      localStorage.setItem('nbis_token', token);
-      localStorage.setItem('nbis_user', JSON.stringify(user));
-
-      setToken(token);
-      setUser(user);
-      setIsAuthenticated(true);
-
-      return { success: true, user };
+      const { data } = await axios.get('/api/user');
+      setUser(data);
     } catch (error) {
-      return {
-        success: false,
-        error: error.response?.data?.message || 'Login failed',
-        errors: error.response?.data?.errors,
-      };
+      setUser(null);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // 🚀 تعديل يستقبل الـ config ويمرره للباكيند
-  const register = async (data, config = {}) => {
-    try {
-      const response = await authService.register(data, config);
-      const { token, user } = response;
+  // دالة تسجيل الدخول
+  const login = async (formData) => {
+    // 1. طلب الـ CSRF Token أولاً
+    await axios.get('/sanctum/csrf-cookie');
 
-      localStorage.setItem('nbis_token', token);
-      localStorage.setItem('nbis_user', JSON.stringify(user));
+    // 2. إرسال طلب تسجيل الدخول
+    const response = await axios.post('/api/login', formData);
 
-      setToken(token);
-      setUser(user);
-      setIsAuthenticated(true);
-
-      return { success: true, user };
-    } catch (error) {
-      return {
-        success: false,
-        error: error.response?.data?.message || 'Registration failed',
-        errors: error.response?.data?.errors,
-      };
-    }
+    // 3. تحديث بيانات المستخدم في الـ State
+    setUser(response.data.user);
   };
 
+  // دالة التسجيل (Register)
+  const register = async (formData) => {
+    // 1. طلب الـ CSRF Token أولاً
+    await axios.get('/sanctum/csrf-cookie');
+
+    // 2. إرسال طلب التسجيل
+    const response = await axios.post('/api/register', formData);
+
+    // 3. تحديث بيانات المستخدم في الـ State
+    setUser(response.data.user);
+  };
+
+  // دالة تسجيل الخروج
   const logout = async () => {
     try {
-      await authService.logout();
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      localStorage.removeItem('nbis_token');
-      localStorage.removeItem('nbis_user');
-      setToken(null);
+      await axios.post('/api/logout');
       setUser(null);
-      setIsAuthenticated(false);
-    }
-  };
-
-  const getCurrentUser = async () => {
-    try {
-      const response = await authService.getCurrentUser();
-      setUser(response.user);
-      localStorage.setItem('nbis_user', JSON.stringify(response.user));
-      return response.user;
     } catch (error) {
-      if (error.response?.status === 401) {
-        logout();
-      }
-      throw error;
+      console.error("Logout failed:", error);
     }
   };
 
-  const value = { user, token, loading, isAuthenticated, login, register, logout, getCurrentUser };
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  useEffect(() => {
+    getUser();
+  }, []);
+
+  return (
+    <AuthContext.Provider value={{ user, login, register, logout, loading, setUser }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
+
+export const useAuth = () => useContext(AuthContext);
