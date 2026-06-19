@@ -18,7 +18,7 @@ import OrganizationPolice from "./pages/admin/organizationPolice";
 import RolesPermissions from "./pages/admin/rolesPermissions";
 import ReportMissing from "./pages/admin/reportMissing";
 import NurseDashboard from "./pages/nurse/nurseDashboard";
-import ChildrenList from "./pages/nurse/childrenList"; // 🎯 الملف الموحد والصحيح لقائمة الأطفال
+import ChildrenList from "./pages/nurse/childrenList";
 import PoliceDashboard from "./pages/police/policeDashboard";
 
 import ParentDashboard from "./pages/parent/parentDashboard";
@@ -30,7 +30,7 @@ import VerificationLogsShared from "./pages/shared/VerificationLogs";
 
 import { AuthProvider } from "./context/AuthContext";
 import NurseLayout from "./components/nurseLayout";
-import adminLayout from "./components/adminLayout"; // 🎯 تأكد أن الحرف يطابق اسم ملفك (سمول أو كابيتال)
+import adminLayout from "./components/adminLayout";
 import PoliceLayout from "./components/policeLayout";
 
 function App() {
@@ -64,8 +64,6 @@ function App() {
           <Route path="/nurse/dashboard" element={<ProtectedRoute allowedRoles={['nurse', 'admin']}><NurseDashboard /></ProtectedRoute>} />
           <Route path="/nurse/children/list" element={<ProtectedRoute allowedRoles={['nurse', 'admin']}><ChildrenList /></ProtectedRoute>} />
           <Route path="/nurse/children/register" element={<ProtectedRoute allowedRoles={['nurse', 'admin']}><RegisterChildForm layout={NurseLayout} /></ProtectedRoute>} />
-
-          {/* 🎯 تم استبدال الكراش بصفحة قائمة الأطفال مؤقتاً لحين برمجة صفحة التفاصيل المنفصلة */}
           <Route path="/nurse/child/:id" element={<ProtectedRoute allowedRoles={['nurse', 'admin']}><ChildrenList /></ProtectedRoute>} />
           <Route path="/nurse/profile" element={<ProtectedRoute allowedRoles={['nurse', 'admin']}><Profile layout={NurseLayout} /></ProtectedRoute>} />
 
@@ -78,16 +76,7 @@ function App() {
           <Route path="/parent/dashboard" element={<ProtectedRoute allowedRoles={['user']}><ParentDashboard /></ProtectedRoute>} />
           <Route path="/parent/verification" element={<ProtectedRoute allowedRoles={['user']}><ParentVerification /></ProtectedRoute>} />
           <Route path="/parent/children" element={<ProtectedRoute allowedRoles={['user']}><MyChildren /></ProtectedRoute>} />
-
-          {/* 🎯 تم تعديل هنا أيضاً لتفادي الصفحة البيضاء */}
-          <Route
-            path="/parent/child-details/:id"
-            element={
-              <ProtectedRoute allowedRoles={['user']}>
-                <MyChildren />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/parent/child-details/:id" element={<ProtectedRoute allowedRoles={['user']}><MyChildren /></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
