@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext'; // تأكد من صحة مسار الـ Context عندك
+import { useAuth } from "../context/AuthContext"; // 🎯 رجوع خطوة واحدة وليس خطوتين// تأكد من صحة مسار الـ Context عندك
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });

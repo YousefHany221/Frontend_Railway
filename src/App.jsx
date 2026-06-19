@@ -22,7 +22,7 @@ import ChildrenList from "./pages/nurse/childrenList";
 import PoliceDashboard from "./pages/police/policeDashboard";
 
 // استيراد صفحة تفاصيل الطفل
-import ChildDetails from "./pages/nurse/ChildDetails";
+// 🎯 الاستدعاء الصحيح المطابق للملف عندك بالظبط
 
 import ParentDashboard from "./pages/parent/parentDashboard";
 import ParentVerification from "./pages/parent/parentVerification";
