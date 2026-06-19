@@ -1,9 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
-
-// إعداد الرابط الرئيسي للباكيند تلقائياً لـ Axios وتأمين نقل الـ Cookies
-axios.defaults.baseURL = 'https://graduation-project-2026-nbis-backend-production.up.railway.app';
-axios.defaults.withCredentials = true;
+import { authService } from '../api/auth'; // ⚠️ تأكد من صحة مسار ملف الـ authService عندك
 
 const AuthContext = createContext(null);
 
@@ -11,21 +7,23 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // جلب بيانات المستخدم الحالي عند تحميل الصفحة للتأكد من الجلسة
+  // جلب بيانات المستخدم الحالي عند تحميل الصفحة للتأكد من الجلسة عبر الـ client الموحد
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const token = localStorage.getItem('auth_token');
-        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-
-        const response = await axios.get('/api/user', { headers });
-        if (response.data.status === 'success') {
-          setUser(response.data.user);
+        const token = localStorage.getItem('nbis_token');
+        if (token) {
+          const data = await authService.getCurrentUser();
+          // إذا كان الباكيند يرجع الحساب داخل كائن نجاح أو مباشرة
+          if (data) {
+            setUser(data.user || data);
+          }
         }
       } catch (error) {
-        // إذا انتهت الجلسة أو الـ Token غير صالح
+        console.error("Session checked failed:", error);
         setUser(null);
-        localStorage.removeItem('auth_token');
+        localStorage.removeItem('nbis_token');
+        localStorage.removeItem('nbis_user');
       } finally {
         setLoading(false);
       }
@@ -38,46 +36,35 @@ export const AuthProvider = ({ children }) => {
    * 1. دالة تسجيل الدخول (Login)
    */
   const login = async (formData) => {
-    // أ. طلب الـ CSRF Token أولاً لتأمين الجلسة ضد هجمات الخطف
-    await axios.get('/sanctum/csrf-cookie');
+    // الاستعانة بالخدمة المجهزة تلقائياً بالـ CSRF والـ BaseURL الصحيح
+    const data = await authService.login(formData);
 
-    // ب. إرسال طلب تسجيل الدخول مع الحماية الكاملة لتجنب خطأ 422
-    const response = await axios.post('/api/login', formData, {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    });
-
-    // ج. حفظ الـ Token في الـ LocalStorage (للاستخدام الاحتياطي أو الموبايل)
-    if (response.data.token) {
-      localStorage.setItem('auth_token', response.data.token);
+    if (data.token) {
+      localStorage.setItem('nbis_token', data.token);
     }
 
-    // د. تحديث حالة المستخدم في التطبيق
-    setUser(response.data.user);
-    return response.data;
+    const loggedInUser = data.user || data;
+    localStorage.setItem('nbis_user', JSON.stringify(loggedInUser));
+    setUser(loggedInUser);
+
+    return data;
   };
 
   /**
    * 2. دالة تسجيل حساب جديد (Register)
    */
   const register = async (formData) => {
-    await axios.get('/sanctum/csrf-cookie');
+    const data = await authService.register(formData);
 
-    const response = await axios.post('/api/register', formData, {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (response.data.token) {
-      localStorage.setItem('auth_token', response.data.token);
+    if (data.token) {
+      localStorage.setItem('nbis_token', data.token);
     }
 
-    setUser(response.data.user);
-    return response.data;
+    const registeredUser = data.user || data;
+    localStorage.setItem('nbis_user', JSON.stringify(registeredUser));
+    setUser(registeredUser);
+
+    return data;
   };
 
   /**
@@ -85,16 +72,14 @@ export const AuthProvider = ({ children }) => {
    */
   const logout = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
-      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
-
-      await axios.post('/api/logout', {}, { headers });
+      await authService.logout();
     } catch (error) {
       console.error("Logout request failed:", error);
     } finally {
-      // حذف البيانات محلياً في كل الأحوال لتأمين واجهة المستخدم
+      // تنظيف محلي شامل في كل الأحوال لتأمين واجهتك
       setUser(null);
-      localStorage.removeItem('auth_token');
+      localStorage.removeItem('nbis_token');
+      localStorage.removeItem('nbis_user');
     }
   };
 
@@ -105,7 +90,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Hook مخصص لسهولة استدعاء الـ Auth بداخل صفحاتك (مثل صفحة Login)
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
