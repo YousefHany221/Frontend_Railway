@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 🎯 الكود القديم بتاعك بعد تصليح المقاسات */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
 
